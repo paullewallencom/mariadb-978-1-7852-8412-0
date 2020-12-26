@@ -1,0 +1,159 @@
+# An example MariaDB database server configuration file.
+# 
+# While the option names are the same on both Windows and Linux, the
+# filesystem paths in this example file are Linux-centric and won't
+# work on Windows. Refer instead to the my.ini file that comes with
+# MariaDB on Windows.
+
+
+[client]
+# The client group is for all MariaDB clients, It's configured here
+# with the standard port to connect on and the standard location of
+# the socket file on Ubuntu and Debian. On Windows the socket is a
+# named pipe. You can change the port and socket location to custom
+# locations, but if you do, be sure to change it in the [mysqld]
+# group as well.
+port = 3306
+socket = /var/run/mysqld/mysqld.sock
+# On Fedora, Red Hat, and CentOS, the default socket location is:
+# socket = /var/lib/mysql/mysql.sock
+
+
+[mysqld]
+# The [mysqld] group is the main place for configuring the MariaDB
+# server.
+
+user = mysql # The name of the user which owns the mysqld process
+pid-file = /var/run/mysqld/mysqld.pid # location of the process id file
+
+
+# The port and socket lines need to match the lines in the [client]
+# group
+
+port = 3306
+socket = /var/run/mysqld/mysqld.sock
+
+basedir = /usr           # the dir under which the MariaDB files are installed
+datadir = /var/lib/mysql # where the actual data is stored
+tmpdir  = /tmp           # where to write temporary files
+
+
+# MariaDB is a database server, but in order to allow other machines
+# to connect to it, the bind-address variable needs to be set to the
+# ip address of the server MariaDB is running on. When this variable
+# is set to 127.0.0.1, MariaDB will not allow any external connections
+# (127.0.0.1 is the loopback address, so the effect is that MariaDB
+# only listens to itself).
+
+bind-address = 127.0.0.1
+
+
+# The variables below are some of the most popular variables to tweak
+# when fine tuning a MariaDB installation.
+
+max_connections = 100 # The number of simultaneous connections allowed
+
+
+# connect_timeout is the time, in seconds, the server will wait during
+# a connection attempt for a connect packet before sending a timeout
+# error
+connect_timeout = 5
+
+
+# wait_timeout is the time in seconds that the server will wait for a
+# connection to become active before closing it.
+wait_timeout = 600
+
+
+# When specifying sizes, as some of the next few settings do, we can
+# use letters to specify what we are talking about. If we don't use a
+# letter, the size is assumed to be in Bytes.
+
+#   K = Kilobytes. M = Megabytes, G = Gigabytes
+
+max_allowed_packet = 16M  # max packet length to send or receive
+thread_cache_size  = 128  # how many threads to keep in the cache
+sort_buffer_size   = 4M   # the size of the buffer a sort thread allocates
+
+
+# bulk_insert_buffer_size is the per thread size limit of the buffer
+# used when inserting a lot of data at once
+bulk_insert_buffer_size = 16M 
+
+
+# tmp_table_size sets the maximum in memory size of temporary tables.
+# "in-memory" means that the table exists entirely in the server's
+# RAM. If the size of a temporary table outgrows this size then the
+# table will be converted to an "on disk" temporary table, which means
+# the data put in it will be written to the hard disk. On disk tables
+# are much slower than in memory tables.
+tmp_table_size = 32M 
+
+
+# The Query Cache keeps copies of the result sets of frequently run
+# queries.  Cached queries are updated whenever the database tables
+# the query uses are updated. Using the Query Cache is a great way to
+# improve the performance of MariaDB, especially if you have lots of
+# repeated queries. The query_cache_limit and query_cache_size
+# variables control how big the result set of a cached query is
+# allowed to be and how large the entire cache is allowed to be,
+# respectively.
+
+query_cache_limit = 128K
+query_cache_size  = 64M
+
+# The query_cache_type variable controls the behavior of the cache.
+# Possible values include:
+
+#   0 or 'OFF' ; Off. Don't cache any results
+#   1 or 'ON' ; On mode. Cache all results except for those marked
+#               with the SQL_NO_CACHE option
+#   2 or 'DEMAND' ; On-demand mode. Only cache results marked with the
+#                   SQL_CACHE option.
+
+query_cache_type = 1
+
+
+# log_warnings lets you control how much logging of warnings and
+# errors we do on the server. Possible values are 0, 1, 2, and 3.
+#   0 = don't log warnings and errors
+#   1 = log standard warnings and errors like usage errors, access
+#       denied errors, read errors, option value errors, and so on
+#   2 = log everything from level 1 and also log table handler errors
+#   3 = log everything from levels 1 and 2 and also log all errors and
+#       warnings during repair and recovery operations.
+
+log_warnings = 2
+
+
+# MariaDB can tell you if certain database operations are taking too
+# long to complete. There is a performance penalty for doing this kind
+# of logging, but it can greatly help with identifying performance
+# bottlenecks. It is generally best to keep it disabled unless you
+# need it, so I have the line below commented out, uncomment (remove
+# the '#' from the beginning of) the following line to enable it:
+# slow_query_log
+
+slow_query_log_file = /var/log/mysql/mariadb-slow.log
+
+# long_query_time is how long, in seconds, a query has to take to be
+# logged in the slow query log
+
+long_query_time = 10
+
+# other specialized slow-query-log options are explained here:
+# https://mariadb.com/kb/en/slow-query-log-extended-statistics/
+
+
+# The last item in the MariaDB my.cnf config file on Linux-based
+# machines should be the line that directs MariaDB to the conf.d or
+# my.cnf.d directories. Remember that the files in those directories
+# must end with '.cnf', otherwise they'll be ignored. Uncomment the
+# appropriate line for your system. The first character on the line
+# you want to use must be an exclamation point (!). Comment out or
+# remove both lines on Windows. 
+# 
+# For Debian and Ubuntu: 
+!includedir /etc/mysql/conf.d/ 
+# For Fedora, Red Hat, and CentOS: 
+#!includedir /etc/my.cnf.d
